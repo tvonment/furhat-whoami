@@ -1,5 +1,6 @@
 package furhatos.app.furhatwhoami.flow
 
+import furhatos.app.furhatwhoami.flow.main.Camera
 import furhatos.app.furhatwhoami.flow.main.Idle
 import furhatos.app.furhatwhoami.flow.main.Greeting
 import furhatos.app.furhatwhoami.flow.main.Openai
@@ -18,10 +19,10 @@ val Init: State = state {
     onEntry {
         /** start interaction */
         when {
-            furhat.isVirtual() -> goto(Openai) // Convenient to bypass the need for user when running Virtual Furhat
+            furhat.isVirtual() -> goto(Camera) // Convenient to bypass the need for user when running Virtual Furhat
             users.hasAny() -> {
                 furhat.attend(users.random)
-                goto(Openai)
+                goto(Camera)
             }
             else -> goto(Idle)
         }

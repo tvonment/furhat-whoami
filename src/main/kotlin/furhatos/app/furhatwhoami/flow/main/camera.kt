@@ -18,9 +18,10 @@ val Camera: State = state(Parent) {
         furhat.say("I take a picture!")
         val ffmpegListCommand = "ffmpeg -f avfoundation -list_devices true -i \"\""
         executeCommand(ffmpegListCommand)
-        //val ffmpegCommand = "ffmpeg -f avfoundation -framerate 30 -video_size 640x480 -i \"0\" -frames:v 1 intellij.jpg"
-        val shellScript = "/Users/thomas/Projects/FurhatWhoAmI/src/main/kotlin/furhatos/app/furhatwhoami/flow/main/capture_image.sh"
-        executeShellScript(shellScript)
+        val randomPostfix = generateRandomString(5)
+        val imgName = "$randomPostfix.jpg"
+        val shellScript = "/Users/thomas/Projects/FurhatWhoAmI/src/main/kotlin/furhatos/app/furhatwhoami/camera/capture_image.sh"
+        executeShellScript(shellScript, imgName)
     }
 
     onResponse<Yes> {
@@ -53,9 +54,10 @@ fun executeCommand(command: String) {
     }
 }
 
-fun executeShellScript(scriptPath: String) {
+fun executeShellScript(scriptPath: String, vararg params: String) {
     try {
-        val processBuilder = ProcessBuilder(scriptPath)
+        val command = arrayOf(scriptPath, *params)
+        val processBuilder = ProcessBuilder(*command)
         processBuilder.directory(File(scriptPath).parentFile) // Set the working directory
         processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT)
         processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
@@ -67,4 +69,11 @@ fun executeShellScript(scriptPath: String) {
     } catch (e: InterruptedException) {
         e.printStackTrace()
     }
+}
+
+fun generateRandomString(length: Int): String {
+    val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+    return (1..length)
+            .map { allowedChars.random() }
+            .joinToString("")
 }
