@@ -14,6 +14,7 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
+import kotlin.math.log
 
 val Openai: State = state(Parent) {
     var history: List<ChatHistoryItem> = emptyList()
@@ -23,10 +24,13 @@ val Openai: State = state(Parent) {
 
     onEntry {
         furhat.ask("Hello")
+        println("Start OpenAI conversation")
     }
 
     onResponse {
+        furhat.say("Let me think about that.")
         furhat.gesture(Gestures.Thoughtful)
+        println("User: ${it.text}")
         val client = OkHttpClient()
         // Create a Moshi instance
         val moshi = Moshi.Builder()
@@ -46,6 +50,7 @@ val Openai: State = state(Parent) {
 
         // Convert the MessageRequest object to a JSON string
         val jsonBody = jsonAdapter.toJson(request)
+        println("Request: $jsonBody")
         val httpRequest = Request.Builder()
                 .url(promptFlowUrl)
                 .addHeader("Authorization", "Bearer $promptFlowKey")
@@ -57,12 +62,14 @@ val Openai: State = state(Parent) {
         client.newCall(httpRequest).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 // Handle the failure of the request
+                println("Failed to execute request: $e")
             }
 
             override fun onResponse(call: Call, response: Response) {
                 // Handle the response of the request
+                println("Response received")
                 val responseData = response.body?.string()
-
+                println("Response: $responseData")
                 if (responseData != null) {
                     // Create a JSON adapter for JsonResponse class
                     val jsonResponseAdapter = moshi.adapter(JsonResponse::class.java)
@@ -75,11 +82,11 @@ val Openai: State = state(Parent) {
                             // Process the JsonResponse here, e.g., print the message content
                             history = history + (ChatHistoryItem(
                                     InputItem(it.text),
-                                    OutputItem(jsonResponse.reply),
+                                    OutputItem(jsonResponse.answer),
                             ))
 
                             furhat.run {
-                                raise(GotAnswer(jsonResponse.reply))
+                                raise(GotAnswer(jsonResponse.answer))
                             }
                         }
                     } catch (e: Exception) {
@@ -94,12 +101,12 @@ val Openai: State = state(Parent) {
     // Listen for the GetAnswer event and specify the behavior that should follow
     onEvent<GotAnswer> {
         // Start a new interaction
-        furhat.say(it.reply)
+        furhat.say(it.answer)
         delay(2000)
         reentry() // Go back to the previous state to ask for another joke
     }
 }
-class GotAnswer(val reply: String) : Event()
+class GotAnswer(val answer: String) : Event()
 
 data class MessageRequest(
         @Json(name = "chat_history")
@@ -128,5 +135,5 @@ data class InputItem(
 )
 
 data class JsonResponse(
-        val reply: String,
+        val answer: String,
 )
