@@ -39,7 +39,9 @@ val Openai: State = state(Parent) {
         // Create a MessageRequest object with provided JSON structure
         val request = MessageRequest(
                 history,
-                it.text
+                it.text,
+                "player1", //player2 or furhat
+                CharactersObject("King Kong", "Aladin")
         )
 
         // Convert the MessageRequest object to a JSON string
@@ -102,7 +104,14 @@ class GotAnswer(val reply: String) : Event()
 data class MessageRequest(
         @Json(name = "chat_history")
         val chatHistory: List<ChatHistoryItem>,
-        val input: String
+        val input: String,
+        val player: String,
+        val characters: CharactersObject
+)
+
+data class CharactersObject(
+        val player1: String,
+        val player2: String
 )
 
 data class ChatHistoryItem(
