@@ -3,13 +3,14 @@ package furhatos.app.furhatwhoami.services
 import com.squareup.moshi.Json
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import furhatos.app.furhatwhoami.shared.GameState
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 interface OpenAIService {
-    fun sendMessage(player: String, message: String, characters: CharactersObject, callback: (response: String) -> Unit)
+    fun sendMessage(player: String, message: String, callback: (response: String) -> Unit)
 }
 object OpenAIServiceImpl : OpenAIService {
     var history: List<ChatHistoryItem> = emptyList()
@@ -23,10 +24,10 @@ object OpenAIServiceImpl : OpenAIService {
             .build()
 
     // Implement the sendMessage method
-    override fun sendMessage(player: String, message: String, characters: CharactersObject, callback: (response: String) -> Unit) {
+    override fun sendMessage(player: String, message: String, callback: (response: String) -> Unit) {
         // Create a JSON adapter for MessageRequest class
         val jsonAdapter = moshi.adapter(MessageRequest::class.java)
-
+        val characters = CharactersObject(player1 = GameState.player1.character, player2 = GameState.player2.character)
         val request = MessageRequest(
                 history,
                 message,
