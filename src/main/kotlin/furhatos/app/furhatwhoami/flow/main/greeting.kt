@@ -19,7 +19,7 @@ val Greeting: State = state(Parent) {
 
 val YourName: State = state(Parent){
     onEntry{
-        furhat.ask("What is your name?")
+        furhat.ask("What is your name dude?")
     }
     onResponse {
         //extract name from answer
