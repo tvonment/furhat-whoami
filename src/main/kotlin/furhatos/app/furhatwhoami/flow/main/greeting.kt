@@ -13,14 +13,46 @@ val Greeting: State = state(Parent) {
     onEntry {
         furhat.say("Hi there.")
         delay(100)
-        goto(WantToPlay)
+        goto(YourName)
     }
 }
+
+val YourName: State = state(Parent){
+    onEntry{
+        furhat.ask("What is your name dude?")
+    }
+    onResponse {
+        //extract name from answer
+        val response = (it.text)
+        val pattern=Regex("my name is (\\w+)")
+        val matchResult = pattern.find(response)
+
+        //save name of first payer to nameID1
+        val nameID1 = matchResult?.groupValues?.get(1)
+        furhat.say("Nice to meet you $nameID1")
+        goto(WantToPlay) //change to Want to play
+    }
+//    onEvent {
+//        furhat.ask("And what is your name?")
+//    }
+//    onResponse {
+//        //extract name from answer
+//        val response = (it.text)
+//        val pattern = Regex("my name is (\\w+)")
+//        val matchResult = pattern.find(response)
+//
+//        //save name of second player to nameID2
+//        val nameID2 = matchResult?.groupValues?.get(1)
+//        furhat.say("Nice to meet you too $nameID2")
+//        goto(WantToPlay)
+//    }
+}
+
 
 val WantToPlay: State = state(Parent){
 
     onEntry {
-        furhat.ask("Do you want to play a game of who am I?")
+        furhat.ask("Do you two want to play a game of who am I?")
     }
 
     onResponse<Yes>{

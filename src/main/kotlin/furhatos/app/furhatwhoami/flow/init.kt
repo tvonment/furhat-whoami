@@ -11,6 +11,7 @@ import furhatos.flow.kotlin.State
 import furhatos.flow.kotlin.furhat
 import furhatos.flow.kotlin.state
 import furhatos.flow.kotlin.users
+import javax.swing.text.html.HTML.Tag.HEAD
 
 val Init: State = state {
     init {
@@ -20,8 +21,8 @@ val Init: State = state {
     onEntry {
         /** start interaction */
         when {
-            furhat.isVirtual() -> goto(Openai2) // Convenient to bypass the need for user when running Virtual Furhat
-            //furhat.isVirtual() -> goto(Greeting) // Convenient to bypass the need for user when running Virtual Furhat
+            //furhat.isVirtual() -> goto(Camera) // Convenient to bypass the need for user when running Virtual Furhat
+            furhat.isVirtual() -> goto(Greeting) // Convenient to bypass the need for user when running Virtual Furhat
         }
 
     }
