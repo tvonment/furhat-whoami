@@ -47,7 +47,7 @@ val BeginGame : State = state(Parent){
 val FirstPlayer: State = state(Parent){
     onEntry {
         furhat.say("Now the first player can start asking a question.")
-        furhat.ask ("Do you want to start?")
+        furhat.ask ("Do you want to start ") //here I am
         //gazes at person to the left.
     }
     onResponse<Yes>{

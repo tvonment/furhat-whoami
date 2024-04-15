@@ -19,7 +19,7 @@ val Init: State = state {
     onEntry {
         /** start interaction */
         when {
-            furhat.isVirtual() -> goto(Camera) // Convenient to bypass the need for user when running Virtual Furhat
+            //furhat.isVirtual() -> goto(Camera) // Convenient to bypass the need for user when running Virtual Furhat
             furhat.isVirtual() -> goto(Greeting) // Convenient to bypass the need for user when running Virtual Furhat
         }
 
