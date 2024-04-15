@@ -31,8 +31,8 @@ val YourName: State = state(Parent) {
         //save name of first payer to nameID1
         val nameID1 = matchResult?.groupValues?.get(1)
         GameState.player1.realName = nameID1.toString()
-        furhat.say("Nice to meet you $nameID1")
-        goto(FirstPlayer) //change to Want to play // CHANG TO YOUR NAME 2
+        furhat.say("Nice to meet you ${GameState.player1.realName}")
+        goto(YourName2) //change to Want to play // CHANG TO YOUR NAME 2
     }
 }
 val YourName2: State = state(Parent) {
@@ -41,6 +41,7 @@ val YourName2: State = state(Parent) {
     }
     onResponse {
         //extract name from second answer
+//        TODO: only my name is works now, should be fixed later
         val response = (it.text)
         val pattern = Regex("my name is (\\w+)")
         val matchResult = pattern.find(response)
@@ -48,7 +49,7 @@ val YourName2: State = state(Parent) {
         //save name of first payer to nameID1
         val nameID2 = matchResult?.groupValues?.get(1)
         GameState.player2.realName = nameID2.toString()
-        furhat.say("It's a pleasure to meet you $nameID2")
+        furhat.say("It's a pleasure to meet you ${GameState.player2.realName}")
         goto(WantToPlay) //change to Want to play
 
     }

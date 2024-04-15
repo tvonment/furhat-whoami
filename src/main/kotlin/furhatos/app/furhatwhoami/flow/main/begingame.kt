@@ -19,6 +19,7 @@ import furhatos.nlu.common.Yes
 //give assignment to write cards
 val BeginGame : State = state(Parent){
     onEntry {
+//        TODO: explain about the list of characters where they should choose from
         furhat.say {
             random {
                 +"Let's first write the cards, one for each of us."
@@ -30,14 +31,14 @@ val BeginGame : State = state(Parent){
                 +"don't show the cards to yet."
             }
         }
-        delay(5000)
+//        delay(5000)
         furhat.ask("Ok. are you ready?")
     }
 
     onResponse<Yes>{
-            furhat.say("Good. Now place the cards on your forehead and lay mine in front of me. But don't block my camera please.")
-            delay(5000)
-            furhat.say("Can you look at me please, so I can read your cards.")
+//            furhat.say("Good. Now place the cards on your forehead and lay mine in front of me. But don't block my camera please.")
+//            delay(5000)
+//            furhat.say("Can you look at me please, so I can read your cards.")
             GetCharactersImpl.saveCharacters { response ->
                 furhat.run {
                     raise(SavedCharacters(response))
@@ -46,6 +47,7 @@ val BeginGame : State = state(Parent){
     }
 
     onResponse<No>{
+//        TODO: add sentence to randomize text
             furhat.say("Okay, I will give you 10 more seconds.")
             delay(10000)
             furhat.ask("Ok. How about now?")
@@ -67,15 +69,29 @@ val FirstPlayer: State = state(Parent){
         furhat.ask ("Do you want to start ${GameState.player1.realName}")
         //gazes at person to the left.
     }
-    onResponse<Yes>{
-        furhat.say("Well, take it away. Ask the first question.")
-        //gotoopenAI listening
+    onResponse<Yes> {
+        furhat.ask("Well, take it away. Ask the first question.")
     }
     onResponse<No>{
         furhat.say("Then I will start.")
         //start asking a question
         goto(QuestionFurhat)
 
+    }
+
+    onResponse {
+
+        OpenAIServiceImpl.sendMessage("player1", it.text, ) { response ->
+            furhat.run {
+                raise(HasAnswer(response))
+            }
+        }
+    }
+
+    onEvent<HasAnswer> {
+        furhat.say(it.answer)
+//        TODO: wait for other response
+//        TODO: if yes --> go to another round, if no --> next turn (depending on the player)
     }
 }
 
@@ -84,7 +100,7 @@ val QuestionFurhat: State = state(Parent) {
         OpenAIServiceImpl.sendMessage("furhat", "your turn") {
             response ->
             furhat.run {
-                raise(GotQuestion(response))
+                raise(HasAnswer(response))
             }
         }
     }
@@ -101,5 +117,6 @@ val QuestionFurhat: State = state(Parent) {
     }
 }
 
+class HasAnswer(val answer: String) : Event()
 class GotQuestion(val question: String) : Event()
 class SavedCharacters(val res: Boolean) : Event()
