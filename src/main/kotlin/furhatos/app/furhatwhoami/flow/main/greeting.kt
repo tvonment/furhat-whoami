@@ -1,6 +1,7 @@
 package furhatos.app.furhatwhoami.flow.main
 
 import furhatos.app.furhatwhoami.flow.Parent
+import furhatos.app.furhatwhoami.shared.GameState
 import furhatos.flow.kotlin.*
 //import furhatos.flow.kotlin.onResponse
 import furhatos.nlu.common.No
@@ -17,35 +18,40 @@ val Greeting: State = state(Parent) {
     }
 }
 
-val YourName: State = state(Parent){
-    onEntry{
+val YourName: State = state(Parent) {
+    onEntry {
         furhat.ask("What is your name?")
     }
     onResponse {
         //extract name from answer
         val response = (it.text)
-        val pattern=Regex("my name is (\\w+)")
+        val pattern = Regex("my name is (\\w+)")
         val matchResult = pattern.find(response)
 
         //save name of first payer to nameID1
         val nameID1 = matchResult?.groupValues?.get(1)
+        GameState.player1.realName = nameID1.toString()
         furhat.say("Nice to meet you $nameID1")
-        goto(WantToPlay) //change to Want to play
+        goto(FirstPlayer) //change to Want to play // CHANG TO YOUR NAME 2
     }
-//    onEvent {
-//        furhat.ask("And what is your name?")
-//    }
-//    onResponse {
-//        //extract name from answer
-//        val response = (it.text)
-//        val pattern = Regex("my name is (\\w+)")
-//        val matchResult = pattern.find(response)
-//
-//        //save name of second player to nameID2
-//        val nameID2 = matchResult?.groupValues?.get(1)
-//        furhat.say("Nice to meet you too $nameID2")
-//        goto(WantToPlay)
-//    }
+}
+val YourName2: State = state(Parent) {
+    onEntry {
+        furhat.ask("And what is your name?")
+    }
+    onResponse {
+        //extract name from second answer
+        val response = (it.text)
+        val pattern = Regex("my name is (\\w+)")
+        val matchResult = pattern.find(response)
+
+        //save name of first payer to nameID1
+        val nameID2 = matchResult?.groupValues?.get(1)
+        GameState.player2.realName = nameID2.toString()
+        furhat.say("It's a pleasure to meet you $nameID2")
+        goto(WantToPlay) //change to Want to play
+
+    }
 }
 
 
