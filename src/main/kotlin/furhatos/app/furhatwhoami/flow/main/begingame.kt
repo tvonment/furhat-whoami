@@ -1,6 +1,9 @@
 package furhatos.app.furhatwhoami.flow.main
 
 import furhatos.app.furhatwhoami.flow.Parent
+import furhatos.app.furhatwhoami.services.GetCharacters
+import furhatos.app.furhatwhoami.services.GetCharactersImpl
+import furhatos.event.Event
 //import furhatos.app.furhatwhoami.flow.Parent
 import furhatos.flow.kotlin.State
 import furhatos.flow.kotlin.furhat
@@ -32,15 +35,28 @@ val BeginGame : State = state(Parent){
 
     onResponse<Yes>{
             furhat.say("Good. Now place the cards on your forehead and lay mine in front of me. But don't block my camera please.")
-            delay(1000)
-            goto(FirstPlayer)
+            delay(5000)
+            furhat.say("Can you look at me please, so I can read your cards.")
+            GetCharactersImpl.saveCharacters { response ->
+                furhat.run {
+                    raise(SavedCharacters(response))
+                }
+            }
     }
 
     onResponse<No>{
             furhat.say("Okay, I will give you 10 more seconds.")
             delay(10000)
-            furhat.say("Ok. Now place the cards on your forehead and lay mine in front of me. But don't block my camera please.")
-            delay(5000)
+            furhat.ask("Ok. How about now?")
+    }
+
+    onEvent<SavedCharacters> {
+        if (it.res) {
+            goto(FirstPlayer)
+        } else {
+//            say something to get closer and remove picture stuff
+            furhat.say("whooops")
+        }
     }
 }
 
@@ -61,3 +77,5 @@ val FirstPlayer: State = state(Parent){
 //        goto(Openai) ??
     }
 }
+
+class SavedCharacters(val res: Boolean) : Event()
