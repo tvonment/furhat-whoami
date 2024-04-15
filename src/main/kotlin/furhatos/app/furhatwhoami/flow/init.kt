@@ -1,7 +1,10 @@
 package furhatos.app.furhatwhoami.flow
 
+<<<<<<< HEAD
 import furhatos.app.furhatwhoami.flow.main.BeginGame
 import furhatos.app.furhatwhoami.flow.main.Camera
+=======
+>>>>>>> 1eaee51908c6cc170cc8fe949d30bf59bdccdaed
 //import furhatos.app.furhatwhoami.flow.main.Idle
 import furhatos.app.furhatwhoami.flow.main.Greeting
 import furhatos.app.furhatwhoami.flow.main.Openai2
@@ -23,7 +26,7 @@ val Init: State = state {
         /** start interaction */
         when {
             //furhat.isVirtual() -> goto(Camera) // Convenient to bypass the need for user when running Virtual Furhat
-            furhat.isVirtual() -> goto(BeginGame) // Convenient to bypass the need for user when running Virtual Furhat
+            furhat.isVirtual() -> goto(Greeting) // Convenient to bypass the need for user when running Virtual Furhat
         }
     }
 }
