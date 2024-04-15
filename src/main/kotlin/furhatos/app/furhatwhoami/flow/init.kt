@@ -3,6 +3,7 @@ package furhatos.app.furhatwhoami.flow
 import furhatos.app.furhatwhoami.flow.main.Camera
 //import furhatos.app.furhatwhoami.flow.main.Idle
 import furhatos.app.furhatwhoami.flow.main.Greeting
+import furhatos.app.furhatwhoami.flow.main.Openai2
 //import furhatos.app.furhatwhoami.flow.main.Openai
 import furhatos.app.furhatwhoami.setting.DISTANCE_TO_ENGAGE
 import furhatos.app.furhatwhoami.setting.MAX_NUMBER_OF_USERS
@@ -19,8 +20,8 @@ val Init: State = state {
     onEntry {
         /** start interaction */
         when {
-            furhat.isVirtual() -> goto(Camera) // Convenient to bypass the need for user when running Virtual Furhat
-            furhat.isVirtual() -> goto(Greeting) // Convenient to bypass the need for user when running Virtual Furhat
+            furhat.isVirtual() -> goto(Openai2) // Convenient to bypass the need for user when running Virtual Furhat
+            //furhat.isVirtual() -> goto(Greeting) // Convenient to bypass the need for user when running Virtual Furhat
         }
 
     }
