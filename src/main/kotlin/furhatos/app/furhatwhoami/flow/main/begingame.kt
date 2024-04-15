@@ -4,6 +4,7 @@ import furhatos.app.furhatwhoami.flow.Parent
 import furhatos.app.furhatwhoami.services.CharactersObject
 import furhatos.app.furhatwhoami.services.OpenAIServiceImpl
 import furhatos.app.furhatwhoami.shared.GameState
+import furhatos.event.Event
 //import furhatos.app.furhatwhoami.flow.Parent
 import furhatos.flow.kotlin.State
 import furhatos.flow.kotlin.furhat
@@ -67,9 +68,18 @@ val FirstPlayer: State = state(Parent){
 
 val QuestionFurhat: State = state(Parent) {
     onEntry {
-//        val response = OpenAIServiceImpl.sendMessage("furhat", "your turn")
-//        furhat.ask { response }
+        OpenAIServiceImpl.sendMessage("furhat", "your turn") {
+            response ->
+            furhat.run {
+                raise(GotQuestion(response))
+            }
+        }
     }
+
+    onEvent<GotQuestion> {
+        furhat.ask(it.question)
+    }
+
     onResponse<No> {
             furhat.say("It's your turn ${GameState.player1.realName}")
         }
@@ -77,3 +87,5 @@ val QuestionFurhat: State = state(Parent) {
             reentry()
     }
 }
+
+class GotQuestion(val question: String) : Event()

@@ -31,15 +31,19 @@ val Openai2: State = state(Parent) {
         println(GameState.player1.character)
         println(GameState.player2.realName)
         println(GameState.player2.character)
-        OpenAIServiceImpl.sendMessage("player1", "am i an animal?") { response ->
-            furhat.say(response)
-        }
 
-        val response = runBlocking {
-            OpenAIServiceImpl.sendMessage("player2", "am i an animal?", characters) { response ->
-                response
+        OpenAIServiceImpl.sendMessage("player1", "am i an animal?") { response ->
+            furhat.run {
+                raise(GotAnswer(response))
             }
         }
-        furhat.say(response)
+    }
+
+    onEvent<GotAnswer> {
+        println("Got answer event")
+        furhat.say(it.answer)
     }
 }
+
+class GotAnswer(val answer: String) : Event()
+

@@ -13,7 +13,6 @@ interface OpenAIService {
     fun sendMessage(player: String, message: String, callback: (response: String) -> Unit)
 }
 object OpenAIServiceImpl : OpenAIService {
-    var history: List<ChatHistoryItem> = emptyList()
     val promptFlowUrl = System.getenv("PROMPT_API_URL")
     val promptFlowKey = System.getenv("PROMPT_API_KEY")
     val promptFlowModel = System.getenv("PROMPT_API_MODEL")
@@ -29,7 +28,7 @@ object OpenAIServiceImpl : OpenAIService {
         val jsonAdapter = moshi.adapter(MessageRequest::class.java)
         val characters = CharactersObject(player1 = GameState.player1.character, player2 = GameState.player2.character)
         val request = MessageRequest(
-                history,
+                GameState.openAiHistory,
                 message,
                 player, //player2 or furhat
                 characters
@@ -61,7 +60,7 @@ object OpenAIServiceImpl : OpenAIService {
                 val jsonResponse = responseData?.let { jsonResponseAdapter.fromJson(it) }
                 jsonResponse?.let {
                     // Add to history and execute the callback with the answer
-                    history = history + ChatHistoryItem(InputItem(message), OutputItem(it.answer))
+                    GameState.openAiHistory.add(ChatHistoryItem(InputItem(message), OutputItem(it.answer)))
                     callback(it.answer)
                 }
             }
