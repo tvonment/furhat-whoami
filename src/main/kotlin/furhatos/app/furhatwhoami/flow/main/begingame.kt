@@ -79,7 +79,6 @@ val FirstPlayer: State = state(Parent){
     }
 }
 
-<<<<<<< HEAD
 val QuestionFurhat: State = state(Parent) {
     onEntry {
         OpenAIServiceImpl.sendMessage("furhat", "your turn") {
@@ -103,6 +102,4 @@ val QuestionFurhat: State = state(Parent) {
 }
 
 class GotQuestion(val question: String) : Event()
-=======
 class SavedCharacters(val res: Boolean) : Event()
->>>>>>> 1eaee51908c6cc170cc8fe949d30bf59bdccdaed
