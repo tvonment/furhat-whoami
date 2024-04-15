@@ -31,8 +31,7 @@ val Openai2: State = state(Parent) {
         println(GameState.player1.character)
         println(GameState.player2.realName)
         println(GameState.player2.character)
-        val characters = CharactersObject(GameState.player1.character, GameState.player2.character)
-        OpenAIServiceImpl.sendMessage("player1", "am i an animal?", characters) { response ->
+        OpenAIServiceImpl.sendMessage("player1", "am i an animal?") { response ->
             furhat.say(response)
         }
 

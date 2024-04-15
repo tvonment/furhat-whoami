@@ -1,6 +1,9 @@
 package furhatos.app.furhatwhoami.flow.main
 
 import furhatos.app.furhatwhoami.flow.Parent
+import furhatos.app.furhatwhoami.services.CharactersObject
+import furhatos.app.furhatwhoami.services.OpenAIServiceImpl
+import furhatos.app.furhatwhoami.shared.GameState
 //import furhatos.app.furhatwhoami.flow.Parent
 import furhatos.flow.kotlin.State
 import furhatos.flow.kotlin.furhat
@@ -47,17 +50,30 @@ val BeginGame : State = state(Parent){
 val FirstPlayer: State = state(Parent){
     onEntry {
         furhat.say("Now the first player can start asking a question.")
-        furhat.ask ("Do you want to start ") //here I am
+        furhat.ask ("Do you want to start ${GameState.player1.realName}")
         //gazes at person to the left.
     }
     onResponse<Yes>{
         furhat.say("Well, take it away. Ask the first question.")
-        //what to do next??
-//        goto(Openai) ??
+        //gotoopenAI listening
     }
     onResponse<No>{
         furhat.say("Then I will start.")
         //start asking a question
-//        goto(Openai) ??
+        goto(QuestionFurhat)
+
+    }
+}
+
+val QuestionFurhat: State = state(Parent) {
+    onEntry {
+//        val response = OpenAIServiceImpl.sendMessage("furhat", "your turn")
+//        furhat.ask { response }
+    }
+    onResponse<No> {
+            furhat.say("It's your turn ${GameState.player1.realName}")
+        }
+    onResponse<Yes> {
+            reentry()
     }
 }
