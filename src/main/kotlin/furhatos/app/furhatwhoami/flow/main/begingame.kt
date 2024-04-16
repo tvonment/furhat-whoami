@@ -55,25 +55,36 @@ val FirstPlayer: State = state(Parent){
     }
     onResponse<Yes>{
         furhat.say("Well, take it away. Ask the first question.")
+        goto(PlayersTurn)
         //gotoopenAI listening
     }
     onResponse<No>{
         furhat.say("Then I will start.")
-        //start asking a question
-        goto(QuestionFurhat)
+        goto(FurhatTurn) //start asking a question
 
     }
 }
 
-val QuestionFurhat: State = state(Parent) {
+val FurhatTurn: State = state(Parent) {
     onEntry {
-//        val response = OpenAIServiceImpl.sendMessage("furhat", "your turn")
-//        furhat.ask { response }
+//        val response = OpenAIServiceImpl.sendMessage("furhat", "your turn" )
+//        furhat.ask { "$response" }
     }
     onResponse<No> {
-            furhat.say("It's your turn ${GameState.player1.realName}")
+            furhat.say("Ok. Then it's your turn ${GameState.player1.realName}")
         }
     onResponse<Yes> {
             reentry()
     }
+}
+
+val PlayersTurn: State = state(Parent){
+    onResponse {
+        val question = it.text
+        println("$question")
+        //import the question into the openAI
+        //return answer
+    }
+
+
 }

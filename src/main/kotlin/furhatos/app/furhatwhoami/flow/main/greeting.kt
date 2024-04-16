@@ -3,9 +3,12 @@ package furhatos.app.furhatwhoami.flow.main
 import furhatos.app.furhatwhoami.flow.Parent
 import furhatos.app.furhatwhoami.shared.GameState
 import furhatos.flow.kotlin.*
+import furhatos.gestures.Gestures
 //import furhatos.flow.kotlin.onResponse
 import furhatos.nlu.common.No
 import furhatos.nlu.common.Yes
+import furhatos.records.Location
+
 //import okhttp3.internal.wait
 //import java.awt.SystemColor.text
 
@@ -20,7 +23,10 @@ val Greeting: State = state(Parent) {
 
 val YourName: State = state(Parent) {
     onEntry {
-        furhat.ask("What is your name?")
+        furhat.ask{
+            +"What is your name?"
+            +glance(Location.LEFT) //looks at player on the left
+        }
     }
     onResponse {
         //extract name from answer
@@ -31,26 +37,40 @@ val YourName: State = state(Parent) {
         //save name of first payer to nameID1
         val nameID1 = matchResult?.groupValues?.get(1)
         GameState.player1.realName = nameID1.toString()
-        furhat.say("Nice to meet you $nameID1")
-        goto(FirstPlayer) //change to Want to play // CHANG TO YOUR NAME 2
+        furhat.say{
+            +"Nice to meet you $nameID1"
+            +glance(Location.LEFT)
+            +Gestures.Smile
+        }
+        goto(YourName2) //CHANG TO First player if skipping
     }
 }
 val YourName2: State = state(Parent) {
     onEntry {
-        furhat.ask("And what is your name?")
+        furhat.ask{
+            +"And what is your name?"
+            +glance(Location.RIGHT)// gaze to the 2nd person
+    }
     }
     onResponse {
         //extract name from second answer
         val response = (it.text)
-        val pattern = Regex("my name is (\\w+)")
+        val pattern = Regex("my name is (\\w+)") //add other variables
         val matchResult = pattern.find(response)
 
         //save name of first payer to nameID1
         val nameID2 = matchResult?.groupValues?.get(1)
         GameState.player2.realName = nameID2.toString()
-        furhat.say("It's a pleasure to meet you $nameID2")
+        furhat.say {
+            "It's a pleasure to meet you $nameID2"
+            +glance(Location.RIGHT)
+            +Gestures.Smile
+        }
         goto(WantToPlay) //change to Want to play
-
+    }
+    onNoResponse {
+        furhat.say("I'm sorry I didn't hear you")
+        reentry()
     }
 }
 
