@@ -1,9 +1,10 @@
 package furhatos.app.furhatwhoami.flow.main
 
 import furhatos.app.furhatwhoami.flow.Parent
-import furhatos.app.furhatwhoami.services.CharactersObject
 import furhatos.app.furhatwhoami.services.OpenAIServiceImpl
 import furhatos.app.furhatwhoami.shared.GameState
+import furhatos.app.furhatwhoami.services.GetCharactersImpl
+import furhatos.event.Event
 //import furhatos.app.furhatwhoami.flow.Parent
 import furhatos.flow.kotlin.State
 import furhatos.flow.kotlin.furhat
@@ -18,6 +19,7 @@ import furhatos.nlu.common.Yes
 //give assignment to write cards
 val BeginGame : State = state(Parent){
     onEntry {
+//        TODO: explain about the list of characters where they should choose from
         furhat.say {
             random {
                 +"Let's first write the cards, one for each of us."
@@ -29,21 +31,35 @@ val BeginGame : State = state(Parent){
                 +"don't show the cards to yet."
             }
         }
-        delay(5000)
+//        delay(5000)
         furhat.ask("Ok. are you ready?")
     }
 
     onResponse<Yes>{
-            furhat.say("Good. Now place the cards on your forehead and lay mine in front of me. But don't block my camera please.")
-            delay(1000)
-            goto(FirstPlayer)
+//            furhat.say("Good. Now place the cards on your forehead and lay mine in front of me. But don't block my camera please.")
+//            delay(5000)
+//            furhat.say("Can you look at me please, so I can read your cards.")
+            GetCharactersImpl.saveCharacters { response ->
+                furhat.run {
+                    raise(SavedCharacters(response))
+                }
+            }
     }
 
     onResponse<No>{
+//        TODO: add sentence to randomize text
             furhat.say("Okay, I will give you 10 more seconds.")
             delay(10000)
-            furhat.say("Ok. Now place the cards on your forehead and lay mine in front of me. But don't block my camera please.")
-            delay(5000)
+            furhat.ask("Ok. How about now?")
+    }
+
+    onEvent<SavedCharacters> {
+        if (it.res) {
+            goto(FirstPlayer)
+        } else {
+//            say something to get closer and remove picture stuff
+            furhat.say("whooops")
+        }
     }
 }
 
@@ -53,9 +69,10 @@ val FirstPlayer: State = state(Parent){
         furhat.ask ("Do you want to start ${GameState.player1.realName}")
         //gazes at person to the left.
     }
+
     onResponse<Yes>{
         furhat.say("Well, take it away. Ask the first question.")
-        goto(PlayersTurn)
+       // goto(PlayersTurn)
         //gotoopenAI listening
     }
     onResponse<No>{
@@ -63,13 +80,38 @@ val FirstPlayer: State = state(Parent){
         goto(FurhatTurn) //start asking a question
 
     }
+
+    onResponse {
+
+        OpenAIServiceImpl.sendMessage("player1", it.text ) { response ->
+            furhat.run {
+                raise(HasAnswer(response))
+            }
+        }
+    }
+
+    onEvent<HasAnswer> {
+        furhat.say(it.answer)
+//        TODO: wait for other response
+//        TODO: if yes --> go to another round, if no --> next turn (depending on the player)
+    }
 }
 
 val FurhatTurn: State = state(Parent) {
     onEntry {
-//        val response = OpenAIServiceImpl.sendMessage("furhat", "your turn" )
-//        furhat.ask { "$response" }
+
+        OpenAIServiceImpl.sendMessage("furhat", "your turn") {
+            response ->
+            furhat.run {
+                raise(HasAnswer(response))
+            }
+        }
     }
+
+    onEvent<GotQuestion> {
+        furhat.ask(it.question)
+    }
+
     onResponse<No> {
             furhat.say("Ok. Then it's your turn ${GameState.player1.realName}")
         }
@@ -78,13 +120,7 @@ val FurhatTurn: State = state(Parent) {
     }
 }
 
-val PlayersTurn: State = state(Parent){
-    onResponse {
-        val question = it.text
-        println("$question")
-        //import the question into the openAI
-        //return answer
-    }
+class HasAnswer(val answer: String) : Event()
+class GotQuestion(val question: String) : Event()
+class SavedCharacters(val res: Boolean) : Event()
 
-
-}

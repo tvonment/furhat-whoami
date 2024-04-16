@@ -13,6 +13,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import furhatos.app.furhatwhoami.services.CharactersObject
 import furhatos.app.furhatwhoami.services.OpenAIServiceImpl
 import furhatos.app.furhatwhoami.shared.GameState
+import kotlinx.coroutines.runBlocking
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -30,8 +31,19 @@ val Openai2: State = state(Parent) {
         println(GameState.player1.character)
         println(GameState.player2.realName)
         println(GameState.player2.character)
+
         OpenAIServiceImpl.sendMessage("player1", "am i an animal?") { response ->
-            furhat.say(response)
+            furhat.run {
+                raise(GotAnswer(response))
+            }
         }
     }
+
+    onEvent<GotAnswer> {
+        println("Got answer event")
+        furhat.say(it.answer)
+    }
 }
+
+class GotAnswer(val answer: String) : Event()
+
