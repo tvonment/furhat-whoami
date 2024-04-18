@@ -40,16 +40,16 @@ val EndGameWin : State = state(Parent){
                 +"Thank you for being such good competitors"
             }
         }
-        onResponse{
-            if it.text contains "congratulations"{
-                furhat.say("thank you so much!")
+//        onResponse{
+//            if it.text contains ("congratulations"){
+//                furhat.say("thank you so much!")
                 //end game
-            }
-            else{
+//            }
+//            else{
                 furhat.say("it was nice playing with you")
                 //end game
-            }
+//            }
 
         }
     }
-}
+//}
