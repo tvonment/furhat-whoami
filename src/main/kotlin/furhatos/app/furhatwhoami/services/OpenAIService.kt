@@ -27,11 +27,13 @@ object OpenAIServiceImpl : OpenAIService {
         // Create a JSON adapter for MessageRequest class
         val jsonAdapter = moshi.adapter(MessageRequest::class.java)
         val characters = GameState.characters
+        val thingsyouknow = GameState.thingsyouknow
         val request = MessageRequest(
                 GameState.openAiHistory,
                 message,
                 player, //player2 or furhat
-                characters
+                characters,
+                thingsyouknow
         )
         // Create the HTTP request
         // Convert the MessageRequest object to a JSON string
@@ -60,7 +62,6 @@ object OpenAIServiceImpl : OpenAIService {
                 val jsonResponse = responseData?.let { jsonResponseAdapter.fromJson(it) }
                 jsonResponse?.let {
                     // Add to history and execute the callback with the answer
-                    GameState.openAiHistory.add(ChatHistoryItem(InputItem(message), OutputItem(it.answer)))
                     callback(it.answer)
                 }
             }
@@ -72,7 +73,8 @@ data class MessageRequest(
         val chatHistory: List<ChatHistoryItem>,
         val input: String,
         val player: String,
-        val characters: Array<String>
+        val characters: Array<String>,
+        val thingsyouknow: MutableList<String>
 )
 
 data class ChatHistoryItem(
@@ -81,11 +83,11 @@ data class ChatHistoryItem(
 )
 
 data class OutputItem(
-        val reply: String
+        var reply: String
 )
 
 data class InputItem(
-        val input: String
+        var input: String
 )
 
 data class JsonResponse(

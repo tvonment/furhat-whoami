@@ -1,7 +1,6 @@
 package furhatos.app.furhatwhoami.flow.main
 
 import furhatos.app.furhatwhoami.flow.Parent
-import furhatos.app.furhatwhoami.services.CharactersObject
 import furhatos.app.furhatwhoami.services.OpenAIServiceImpl
 import furhatos.app.furhatwhoami.shared.GameState
 //import furhatos.app.furhatwhoami.flow.Parent

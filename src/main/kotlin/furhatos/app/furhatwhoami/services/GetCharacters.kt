@@ -15,7 +15,7 @@ interface GetCharacters {
 
 object GetCharactersImpl : GetCharacters {
     override fun saveCharacters(callback: (successFull: Boolean) -> Unit) {
-        val shellScript = "/Users/liekenijland/Documents/ITech/ConversationalAgents/furhat-whoami/src/main/kotlin/furhatos/app/furhatwhoami/camera/capture_image.sh"
+        val shellScript = "${System.getenv("USER_PATH")}/src/main/kotlin/furhatos/app/furhatwhoami/camera/capture_image.sh"
         executeShellScript(shellScript)
 
         val client = OkHttpClient();
@@ -23,7 +23,7 @@ object GetCharactersImpl : GetCharacters {
 
         try {
             // Read image file as byte array
-            val imageFile = File("${System.getenv("USER_PATH")}furhat-whoami/src/main/kotlin/furhatos/app/furhatwhoami/camera/images/furhat_image.jpg") // Replace with your image file path
+            val imageFile = File("${System.getenv("USER_PATH")}/src/main/kotlin/furhatos/app/furhatwhoami/camera/images/furhat_image.jpg") // Replace with your image file path
             val imageData = imageFile.readBytes()
 
             // Set content type as application/octet-stream
