@@ -66,6 +66,28 @@ object GetCharactersImpl : GetCharacters {
                     }
                 }
 
+                /*val lines = responseString.readResult.content.lines()
+                for (line in lines) {
+                    if (GameState.characters.contains(line)) {
+                        if (GameState.player1.character.isBlank()) {
+                            GameState.player1.character = line
+                        } else {
+                            GameState.player2.character = line
+                        }
+                    }
+                }
+
+                println("Player 1: " + GameState.player1.character)
+                println("Player 2: " + GameState.player2.character)
+
+                if (GameState.player1.character.isBlank().not() && GameState.player2.character.isBlank().not()) {
+                    callback(true)
+                } else {
+                    GameState.player1.character = ""
+                    GameState.player2.character = ""
+                    callback(false)
+                }*/
+
                 println("Characters found: ${matchedCharacters}")
                 GameState.player1.character = matchedCharacters[0];
                 GameState.player2.character = matchedCharacters[1];
