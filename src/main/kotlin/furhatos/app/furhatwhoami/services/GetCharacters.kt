@@ -41,8 +41,8 @@ object GetCharactersImpl : GetCharacters {
 
                 val gson = Gson();
                 val responseString = gson.fromJson(response.body?.string(), Response::class.java)
-                val words = responseString.readResult.content.lines()
-
+                /*val words = responseString.readResult.content.lines()
+                println(responseString)
                 var characterInOneWord = false;
                 val matchedCharacters = mutableListOf<String>()
 
@@ -70,11 +70,28 @@ object GetCharactersImpl : GetCharacters {
                 }
 
                 GameState.player1.character = matchedCharacters[0];
-                GameState.player2.character = matchedCharacters[1];
+                GameState.player2.character = matchedCharacters[1];*/
+
+                val lines = responseString.readResult.content.lines()
+                for (line in lines) {
+                    if (GameState.characters.contains(line)) {
+                        if (GameState.player1.character.isBlank()) {
+                            GameState.player1.character = line
+                        } else {
+                            GameState.player2.character = line
+                        }
+                    }
+                }
 
                 println("Player 1: " + GameState.player1.character)
                 println("Player 2: " + GameState.player2.character)
-                callback(true)
+                if (GameState.player1.character.isBlank().not() && GameState.player2.character.isBlank().not()) {
+                    callback(true)
+                } else {
+                    GameState.player1.character = ""
+                    GameState.player2.character = ""
+                    callback(false)
+                }
 //                TODO:remove image
             }
         } catch (e: Exception) {

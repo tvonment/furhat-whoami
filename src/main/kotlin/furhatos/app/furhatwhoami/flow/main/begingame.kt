@@ -31,14 +31,14 @@ val BeginGame : State = state(Parent){
                 +"don't show the cards to yet."
             }
         }
-//        delay(5000)
+        delay(5000)
         furhat.ask("Ok. are you ready?")
     }
 
     onResponse<Yes>{
-//            furhat.say("Good. Now place the cards on your forehead and lay mine in front of me. But don't block my camera please.")
-//            delay(5000)
-//            furhat.say("Can you look at me please, so I can read your cards.")
+            furhat.say("Good. Now place the cards on your and my forehead.")
+            delay(5000)
+            furhat.say("Can you look at me please, so I can read your cards.")
             GetCharactersImpl.saveCharacters { response ->
                 furhat.run {
                     raise(SavedCharacters(response))
@@ -58,7 +58,13 @@ val BeginGame : State = state(Parent){
             goto(FirstPlayer)
         } else {
 //            say something to get closer and remove picture stuff
-            furhat.say("whooops")
+            furhat.say("whooops there was a problem. Let's try again.")
+            delay(2000)
+            GetCharactersImpl.saveCharacters { response ->
+                furhat.run {
+                    raise(SavedCharacters(response))
+                }
+            }
         }
     }
 }

@@ -15,8 +15,8 @@ import furhatos.records.Location
 
 val Greeting: State = state(Parent) {
     onEntry {
-        furhat.say("Hi there.")
-        delay(100)
+        furhat.say("Hi there. Nice to meet you!")
+        delay(1000)
         goto(YourName)
     }
 }
@@ -47,7 +47,7 @@ val YourName2: State = state(Parent) {
         furhat.ask{
             +"And what is your name?"
             +glance(Location.RIGHT)// gaze to the 2nd person
-    }
+        }
     }
     onResponse {
         //extract name from second answer
@@ -55,15 +55,11 @@ val YourName2: State = state(Parent) {
         val response = (it.text)
         val pattern = Regex("my name is (\\w+)") //add other variables
         val matchResult = pattern.find(response)
-
         //save name of first payer to nameID1
         val nameID2 = matchResult?.groupValues?.get(1)
         GameState.player2.realName = nameID2.toString()
-        furhat.say {
-            "It's a pleasure to meet you ${GameState.player2.realName}"
-            +glance(Location.RIGHT)
-            +Gestures.Smile
-        }
+        furhat.say ("It's a pleasure to meet you ${GameState.player2.realName}")
+
         goto(WantToPlay) //change to Want to play
     }
     onNoResponse {
@@ -86,7 +82,8 @@ val WantToPlay: State = state(Parent){
 
     onResponse<No> {
             furhat.say("Ok, too bad.")
-            //wait? what to do here
+            delay(1000)
+            furhat.ask("how about now?")
         }
 }
 

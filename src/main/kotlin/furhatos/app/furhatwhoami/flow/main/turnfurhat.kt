@@ -5,20 +5,16 @@ import furhatos.app.furhatwhoami.services.OpenAIServiceImpl
 import furhatos.app.furhatwhoami.shared.GameState
 import furhatos.event.Event
 import furhatos.flow.kotlin.*
+import furhatos.nlu.Intent
 import furhatos.nlu.common.No
 import furhatos.nlu.common.Yes
+import furhatos.nlu.intent
+import furhatos.snippets.NoInput.examples
+import furhatos.util.Language
 import kotlin.math.log
 
 val TurnFurhat: State = state(Parent) {
     onEntry {
-        furhat.say{
-            random {
-                +"I ask a question."
-                +"Ok, I go."
-                +"I will ask a question."
-                +"Let me think of a question."
-            }
-        }
         OpenAIServiceImpl.sendMessage("furhat", "your turn") { response ->
             furhat.run {
                 raise(GotFurhatQuestion(response))
@@ -31,25 +27,27 @@ val TurnFurhat: State = state(Parent) {
         furhat.ask(it.question)
     }
 
-    /*onResponse<No> {
+    onResponse<No> {
         GameState.playerOnTurn = GameState.player1
-        GameState.thingsyouknow.add(GameState.currentQuestion + " - No.")
-        goto(TurnPlayer)
+            GameState.thingsyouknow.add(GameState.currentQuestion + " - No.")
+            goto(TurnPlayer)
     }
 
     onResponse<Yes> {
         GameState.thingsyouknow.add(GameState.currentQuestion + " - Yes.")
         reentry()
-    }*/
+    }
 
-    onResponse {
+    onResponse<WonIntent> {
+        goto(EndGameWin)
+    }
+
+    /*onResponse {
         println("understood: ${it.text}")
         if (it.text.contains("won")) {
             goto(EndGameWin)
         } else if (it.text.lowercase().contains("no")) {
-            GameState.playerOnTurn = GameState.player1
-            GameState.thingsyouknow.add(GameState.currentQuestion + " - No.")
-            goto(TurnPlayer)
+
         } else if (it.text.lowercase().contains("yes")) {
             GameState.thingsyouknow.add(GameState.currentQuestion + " - Yes.")
             reentry()
@@ -57,7 +55,12 @@ val TurnFurhat: State = state(Parent) {
             furhat.say("I don't understand. Please answer with yes or no.")
             furhat.listen()
         }
-    }
+    }*/
 }
 
+class WonIntent : Intent(){
+    override fun getExamples(lang: Language): List<String> {
+        return listOf("congrats", "Congratulations, you won.", "Congratulations!", "You won!", "the game is yours", "you won", "you won the game", "you won the game!", "you won the game! Congratulations!", "you won the game! Congrats!", "you won the game! Congrats")
+    }
+}
 class GotFurhatQuestion(val question: String) : Event()

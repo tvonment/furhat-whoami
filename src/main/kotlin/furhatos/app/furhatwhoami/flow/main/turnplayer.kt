@@ -19,7 +19,7 @@ val TurnPlayer: State = state(Parent) {
         println("understood: ${it.text}")
         val player = GameState.playerOnTurn
         println("character: ${player.character}")
-        if (it.text.contains(player.character.lowercase())) {
+        if (it.text.lowercase().contains(player.character.lowercase())) {
             goto(EndGameLose)
         }
         OpenAIServiceImpl.sendMessage(player.character, it.text) { response ->
