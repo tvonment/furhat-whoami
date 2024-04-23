@@ -43,6 +43,8 @@ object GetCharactersImpl : GetCharacters {
                 val responseString = gson.fromJson(response.body?.string(), Response::class.java)
                 val words = responseString.readResult.content.lines()
 
+                println("words: ${words}")
+
                 words.forEach { word ->
                     GameState.characters.forEach { character ->
                         if (character.lowercase() == word.lowercase()) {
