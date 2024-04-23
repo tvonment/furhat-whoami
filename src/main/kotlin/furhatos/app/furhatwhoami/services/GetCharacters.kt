@@ -8,6 +8,8 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Paths
 
 interface GetCharacters {
     fun saveCharacters(callback: (successFull: Boolean) -> Unit)
@@ -41,58 +43,40 @@ object GetCharactersImpl : GetCharacters {
 
                 val gson = Gson();
                 val responseString = gson.fromJson(response.body?.string(), Response::class.java)
-                /*val words = responseString.readResult.content.lines()
-                println(responseString)
-                var characterInOneWord = false;
+                val words: MutableList<String> = responseString.readResult.content.lines().toMutableList()
                 val matchedCharacters = mutableListOf<String>()
 
-                var index = 0
-                while (index < words.size) {
-                    var characterName = words[index].replace(" -", "").replace("-", "").lowercase().replaceFirstChar { it.uppercase() }
+                // Iterate through each word in the list
+                words.toMutableList().forEach { word -> // Use toList() to create a copy of the list to avoid ConcurrentModificationException
+                    var characterName = word.replace(" -", "").replace("-", "").lowercase().replaceFirstChar { it.uppercase() }
 
-                    if(GameState.characters.contains(characterName)) {
-                        characterInOneWord = true
-                    }
-                    else {
-                        if (index + 1 < words.size) {
-                            characterInOneWord = false
-                            val nextWord = words[index + 1].replace("-", "").lowercase().replaceFirstChar { it.uppercase() }
-                            characterName += " $nextWord"
-                        }
-                    }
-
+                    // Iterate through each character in the characters array
                     GameState.characters.forEach { character ->
-                        if (character.lowercase().contains(characterName.lowercase())) {
-                            matchedCharacters.add(characterName)
-                            index += if (characterInOneWord) 1 else if (index + 1 < words.size) 2 else 1
+                        if (character.contains(characterName)) {
+                            if (words.contains(word)) {
+                                matchedCharacters.add(character)
+                                val splittedCharacter = character.split(" ")
+
+                                splittedCharacter.forEach { item ->
+                                    val itemRemoved = words.filter { w -> item.contains(w.replace(" -", "").replace("-", "").lowercase().replaceFirstChar { it.uppercase() }) }
+                                    words.remove(itemRemoved[0])
+                                }
+                            }
                         }
                     }
                 }
 
+                println("Characters found: ${matchedCharacters}")
                 GameState.player1.character = matchedCharacters[0];
-                GameState.player2.character = matchedCharacters[1];*/
-
-                val lines = responseString.readResult.content.lines()
-                for (line in lines) {
-                    if (GameState.characters.contains(line)) {
-                        if (GameState.player1.character.isBlank()) {
-                            GameState.player1.character = line
-                        } else {
-                            GameState.player2.character = line
-                        }
-                    }
-                }
+                GameState.player2.character = matchedCharacters[1];
 
                 println("Player 1: " + GameState.player1.character)
                 println("Player 2: " + GameState.player2.character)
-                if (GameState.player1.character.isBlank().not() && GameState.player2.character.isBlank().not()) {
-                    callback(true)
-                } else {
-                    GameState.player1.character = ""
-                    GameState.player2.character = ""
-                    callback(false)
-                }
-//                TODO:remove image
+
+                val imgPath = Paths.get("${System.getenv("USER_PATH")}/src/main/kotlin/furhatos/app/furhatwhoami/camera/images/furhat_image.jpg")
+                Files.delete(imgPath);
+
+                callback(true)
             }
         } catch (e: Exception) {
             println("error: " + e.message)

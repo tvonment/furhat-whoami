@@ -1,6 +1,7 @@
 package furhatos.app.furhatwhoami.flow.main
 
 import furhatos.app.furhatwhoami.flow.Parent
+import furhatos.app.furhatwhoami.services.GetCharactersImpl
 import furhatos.app.furhatwhoami.shared.GameState
 import furhatos.flow.kotlin.*
 import furhatos.gestures.Gestures
@@ -31,12 +32,18 @@ val YourName: State = state(Parent) {
     onResponse {
         //extract name from answer
         val response = (it.text)
-        val pattern = Regex("my name is (\\w+)")
-        val matchResult = pattern.find(response)
+        var name = ""
+        if (it.text.contains("my name")) {
+            val pattern = Regex("my name is (\\w+)")
+            val matchResult = pattern.find(response)
 
-        //save name of first payer to nameID1
-        val nameID1 = matchResult?.groupValues?.get(1)
-        GameState.player1.realName = nameID1.toString()
+            //save name of first payer to nameID1
+            name = matchResult?.groupValues?.get(1).toString()
+        } else {
+            name = it.text
+        }
+
+        GameState.player1.realName = name
         furhat.say("Nice to meet you ${GameState.player1.realName}")
         goto(YourName2) //change to Want to play // CHANG TO YOUR NAME 2
 
