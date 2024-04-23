@@ -10,7 +10,6 @@ import furhatos.gestures.Gestures
 import com.squareup.moshi.Json
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import furhatos.app.furhatwhoami.services.CharactersObject
 import furhatos.app.furhatwhoami.services.OpenAIServiceImpl
 import furhatos.app.furhatwhoami.shared.GameState
 import kotlinx.coroutines.runBlocking
@@ -32,7 +31,7 @@ val Openai2: State = state(Parent) {
         println(GameState.player2.realName)
         println(GameState.player2.character)
 
-        OpenAIServiceImpl.sendMessage("player1", "am i an animal?") { response ->
+        OpenAIServiceImpl.sendMessage(GameState.player1.character, "am i an animal?") { response ->
             furhat.run {
                 raise(GotAnswer(response))
             }

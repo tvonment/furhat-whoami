@@ -26,7 +26,7 @@ object OpenAIServiceImpl : OpenAIService {
     override fun sendMessage(player: String, message: String, callback: (response: String) -> Unit) {
         // Create a JSON adapter for MessageRequest class
         val jsonAdapter = moshi.adapter(MessageRequest::class.java)
-        val characters = CharactersObject(player1 = GameState.player1.character, player2 = GameState.player2.character)
+        val characters = GameState.characters
         val request = MessageRequest(
                 GameState.openAiHistory,
                 message,
@@ -72,12 +72,7 @@ data class MessageRequest(
         val chatHistory: List<ChatHistoryItem>,
         val input: String,
         val player: String,
-        val characters: CharactersObject
-)
-
-data class CharactersObject(
-        val player1: String,
-        val player2: String
+        val characters: Array<String>
 )
 
 data class ChatHistoryItem(
