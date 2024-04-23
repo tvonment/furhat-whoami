@@ -43,22 +43,39 @@ object GetCharactersImpl : GetCharacters {
                 val responseString = gson.fromJson(response.body?.string(), Response::class.java)
                 val words = responseString.readResult.content.lines()
 
-                println("words: ${words}")
+                var characterInOneWord = false;
+                val matchedCharacters = mutableListOf<String>()
 
-                words.forEach { word ->
+                var index = 0
+                while (index < words.size) {
+                    var characterName = words[index].replace(" -", "").replace("-", "").lowercase().replaceFirstChar { it.uppercase() }
+
+                    if(GameState.characters.contains(characterName)) {
+                        characterInOneWord = true
+                    }
+                    else {
+                        if (index + 1 < words.size) {
+                            characterInOneWord = false
+                            val nextWord = words[index + 1].replace("-", "").lowercase().replaceFirstChar { it.uppercase() }
+                            characterName += " $nextWord"
+                        }
+                    }
+
                     GameState.characters.forEach { character ->
-                        if (character.lowercase() == word.lowercase()) {
-                            if (GameState.player1.character == "unknown") {
-                                GameState.player1.character = word.lowercase();
-                            } else if (GameState.player2.character == "unknown") {
-                                GameState.player2.character = word.lowercase();
-                            }
+                        if (character.lowercase().contains(characterName.lowercase())) {
+                            matchedCharacters.add(characterName)
+                            index += if (characterInOneWord) 1 else if (index + 1 < words.size) 2 else 1
                         }
                     }
                 }
-                println(GameState.player1.character)
-                println(GameState.player2.character)
+
+                GameState.player1.character = matchedCharacters[0];
+                GameState.player2.character = matchedCharacters[1];
+
+                println("Player 1: " + GameState.player1.character)
+                println("Player 2: " + GameState.player2.character)
                 callback(true)
+//                TODO:remove image
             }
         } catch (e: Exception) {
             println("error: " + e.message)
