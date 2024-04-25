@@ -13,6 +13,8 @@ import furhatos.flow.kotlin.onResponse
 import furhatos.flow.kotlin.state
 import furhatos.nlu.common.No
 import furhatos.nlu.common.Yes
+import furhatos.records.Location
+
 //import okhttp3.internal.wait
 //import java.awt.SystemColor.text
 
@@ -37,7 +39,7 @@ val BeginGame : State = state(Parent){
     }
 
     onResponse<Yes>{
-            furhat.say("Good. Now place the cards on your and my forehead.")
+            furhat.say("Good. Now place the cards on each of your foreheads and mine on me.")
             delay(5000)
             furhat.say("Can you look at me please, so I can read your cards.")
             GetCharactersImpl.saveCharacters { response ->
@@ -73,6 +75,7 @@ val BeginGame : State = state(Parent){
 val FirstPlayer: State = state(Parent){
     onEntry {
         furhat.say("Now the first player can start asking a question.")
+        furhat.attend(Location.LEFT)
         furhat.ask ("Do you want to start ${GameState.player1.realName}")
         //gazes at person to the left.
     }
