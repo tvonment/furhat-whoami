@@ -1,8 +1,8 @@
 package furhatos.app.furhatwhoami.flow.main
 
 import furhatos.app.furhatwhoami.flow.Parent
-import furhatos.app.furhatwhoami.services.GetCharactersImpl
 import furhatos.app.furhatwhoami.shared.GameState
+import furhatos.event.Event
 import furhatos.flow.kotlin.*
 import furhatos.gestures.Gestures
 //import furhatos.flow.kotlin.onResponse
@@ -51,6 +51,7 @@ val YourName: State = state(Parent) {
 }
 val YourName2: State = state(Parent) {
     onEntry {
+        furhat.attend(Location.RIGHT)
         furhat.ask{
             +"And what is your name?"
             +glance(Location.RIGHT)// gaze to the 2nd person
@@ -58,13 +59,19 @@ val YourName2: State = state(Parent) {
     }
     onResponse {
         //extract name from second answer
-//        TODO: only my name is works now, should be fixed later
         val response = (it.text)
-        val pattern = Regex("my name is (\\w+)") //add other variables
-        val matchResult = pattern.find(response)
-        //save name of first payer to nameID1
-        val nameID2 = matchResult?.groupValues?.get(1)
-        GameState.player2.realName = nameID2.toString()
+        var name = ""
+        if (it.text.contains("my name")) {
+            val pattern = Regex("my name is (\\w+)")
+            val matchResult = pattern.find(response)
+
+            //save name of first payer to nameID1
+            name = matchResult?.groupValues?.get(1).toString()
+        } else {
+            name = it.text
+        }
+
+        GameState.player2.realName = name
         furhat.say ("It's a pleasure to meet you ${GameState.player2.realName}")
 
         goto(WantToPlay) //change to Want to play
@@ -83,7 +90,7 @@ val WantToPlay: State = state(Parent){
     }
 
     onResponse<Yes>{
-            furhat.say("Nice! Let's start")
+            furhat.say("Nice!")
             goto(CheckKnow)
         }
 
@@ -115,12 +122,44 @@ val ExplainGame: State = state(Parent){
                 "which character is assigned to them. And you find out by asking " +
                 "questions that can be answered with yes or no.")
         goto(BeginGame)
+        //goto(QuestionGameRules)
+    }
+
+
+}
+/*
+val QuestionGameRules: State = state(Parent) {
+    onEntry {
+        furhat.ask("Do you have questions?")
+    }
+    onResponse<No> {
+        furhat.say("Ok. Let's start.")
+        goto(BeginGame)
+    }
+
+    onResponse<Yes> {
+        furhat.ask("Ok. What is your question?")
+    }
+
+    onResponse {
+        OpenAIRulesServiceImpl.sendMessage(it.text) { response ->
+            furhat.run {
+                raise(GotFurhatAnswer(response))
+            }
+        }
+    }
+
+    onEvent<GotFurhatRuleAnswer>{
+        furhat.say(it.answer)
+        reentry()
     }
 }
 
+class GotFurhatRuleAnswer(val answer: String) : Event()
 
 
 
+*/
 
 
 

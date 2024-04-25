@@ -25,10 +25,11 @@ val BeginGame : State = state(Parent){
                 +"Let's first write the cards, one for each of us."
                 +"Let's first create cards with characters, one for each player including me."
             }
+            +"write the name of the character in one line."
             random {
                 +"keep the cards a secret!"
                 +"keep the cards to yourself!"
-                +"don't show the cards to yet."
+                +"don't show the cards to anyone yet."
             }
         }
         delay(5000)
@@ -54,7 +55,7 @@ val BeginGame : State = state(Parent){
     }
 
     onEvent<SavedCharacters> {
-        if (it.res) {
+        if (it.res == true) {
             goto(FirstPlayer)
         } else {
 //            say something to get closer and remove picture stuff

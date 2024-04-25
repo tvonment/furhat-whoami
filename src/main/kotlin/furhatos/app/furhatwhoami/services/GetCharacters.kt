@@ -47,7 +47,7 @@ object GetCharactersImpl : GetCharacters {
                 val matchedCharacters = mutableListOf<String>()
 
                 // Iterate through each word in the list
-                words.toMutableList().forEach { word -> // Use toList() to create a copy of the list to avoid ConcurrentModificationException
+                /*words.toMutableList().forEach { word -> // Use toList() to create a copy of the list to avoid ConcurrentModificationException
                     var characterName = word.replace(" -", "").replace("-", "").lowercase().replaceFirstChar { it.uppercase() }
 
                     // Iterate through each character in the characters array
@@ -64,11 +64,11 @@ object GetCharactersImpl : GetCharacters {
                             }
                         }
                     }
-                }
+                }*/
 
-                /*val lines = responseString.readResult.content.lines()
+                val lines = responseString.readResult.content.lines()
                 for (line in lines) {
-                    if (GameState.characters.contains(line)) {
+                    if (GameState.characters.contains(line.lowercase())) {
                         if (GameState.player1.character.isBlank()) {
                             GameState.player1.character = line
                         } else {
@@ -80,23 +80,23 @@ object GetCharactersImpl : GetCharacters {
                 println("Player 1: " + GameState.player1.character)
                 println("Player 2: " + GameState.player2.character)
 
-                if (GameState.player1.character.isBlank().not() && GameState.player2.character.isBlank().not()) {
+                if (GameState.player1.character.isNotEmpty() && GameState.player2.character.isNotEmpty()) {
                     callback(true)
                 } else {
                     GameState.player1.character = ""
                     GameState.player2.character = ""
                     callback(false)
-                }*/
+                }
 
-                println("Characters found: ${matchedCharacters}")
+               /* println("Characters found: ${matchedCharacters}")
                 GameState.player1.character = matchedCharacters[0];
                 GameState.player2.character = matchedCharacters[1];
 
                 println("Player 1: " + GameState.player1.character)
-                println("Player 2: " + GameState.player2.character)
+                println("Player 2: " + GameState.player2.character)*/
 
-                val imgPath = Paths.get("${System.getenv("USER_PATH")}/src/main/kotlin/furhatos/app/furhatwhoami/camera/images/furhat_image.jpg")
-                Files.delete(imgPath);
+                //val imgPath = Paths.get("${System.getenv("USER_PATH")}/src/main/kotlin/furhatos/app/furhatwhoami/camera/images/furhat_image.jpg")
+                //Files.delete(imgPath);
 
                 callback(true)
             }

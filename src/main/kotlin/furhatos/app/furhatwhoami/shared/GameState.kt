@@ -7,7 +7,7 @@ object GameState {
     var player1 = Player(0, "", "")
     var player2 = Player(0, "", "")
     var playerOnTurn: Player = player1
-    var characters = arrayOf("King Kong", "Donald Duck", "Micky Mouse", "Aladin", "Simba", "Pumbaa", "Baloo", "Elsa", "Belle", "Mulan")
+    var characters = arrayOf("king kong", "donald duck", "mickey mouse", "aladdin", "simba", "pumbaa", "baloo", "elsa", "snow white", "mulan")
     var openAiHistory = mutableListOf<ChatHistoryItem>()
     var thingsyouknow = mutableListOf<String>()
 }

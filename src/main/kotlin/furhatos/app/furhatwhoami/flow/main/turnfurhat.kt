@@ -34,6 +34,13 @@ val TurnFurhat: State = state(Parent) {
     }
 
     onResponse<Yes> {
+        val question = GameState.currentQuestion
+        val characters = GameState.characters
+        for (character in characters) {
+            if (question.lowercase().contains(character.lowercase())) {
+                goto(EndGameWin)
+            }
+        }
         GameState.thingsyouknow.add(GameState.currentQuestion + " - Yes.")
         reentry()
     }

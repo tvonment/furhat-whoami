@@ -16,7 +16,7 @@ val Parent: State = state {
         when {
             !users.hasAny() -> { // last user left
                 furhat.attendNobody()
-                goto(Idle)
+                //goto(Idle)
             }
             furhat.isAttending(it) -> furhat.attend(users.other) // current user left
             !furhat.isAttending(it) -> furhat.glance(it.head.location) // other user left, just glance

@@ -7,13 +7,18 @@ import furhatos.event.Event
 import furhatos.flow.kotlin.*
 import furhatos.nlu.common.No
 import furhatos.nlu.common.Yes
+import furhatos.records.Location
 
 val TurnPlayer: State = state(Parent) {
     onEntry {
         val player = GameState.playerOnTurn
         furhat.say("its your turn ${player.realName}")
         furhat.listen()
-
+        if (player == GameState.player1) {
+            furhat.attend(Location.LEFT)
+        } else {
+            furhat.attend(Location.RIGHT)
+        }
     }
     onResponse{
         println("understood: ${it.text}")
@@ -34,7 +39,7 @@ val TurnPlayer: State = state(Parent) {
         if (it.answer.lowercase().contains("no")) {
             if (GameState.playerOnTurn == GameState.player1) {
                 GameState.playerOnTurn = GameState.player2
-                furhat.say("It's your turn ${GameState.player2.realName}")
+                //furhat.say("It's your turn ${GameState.player2.realName}")
                 reentry()
             } else {
                 GameState.playerOnTurn = GameState.player1
