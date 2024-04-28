@@ -39,6 +39,12 @@ val YourName: State = state(Parent) {
 
             //save name of first payer to nameID1
             name = matchResult?.groupValues?.get(1).toString()
+        } else if (it.text.contains("I am")) {
+            val pattern = Regex("I am (\\w+)")
+            val matchResult = pattern.find(response)
+
+            //save name of first payer to nameID1
+            name = matchResult?.groupValues?.get(1).toString()
         } else {
             name = it.text
         }
@@ -63,6 +69,12 @@ val YourName2: State = state(Parent) {
         var name = ""
         if (it.text.contains("my name")) {
             val pattern = Regex("my name is (\\w+)")
+            val matchResult = pattern.find(response)
+
+            //save name of first payer to nameID1
+            name = matchResult?.groupValues?.get(1).toString()
+        } else if (it.text.contains("I am")) {
+            val pattern = Regex("I am (\\w+)")
             val matchResult = pattern.find(response)
 
             //save name of first payer to nameID1
